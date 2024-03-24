@@ -1,11 +1,8 @@
 module github.com/oli4maes/sipsavy
 
-go 1.21
+go 1.22.1
 
-require (
-	github.com/google/uuid v1.6.0
-	github.com/microsoft/go-mssqldb v1.7.0
-)
+require github.com/microsoft/go-mssqldb v1.7.0
 
 require (
 	github.com/golang-sql/civil v0.0.0-20220223132316-b832511892a9 // indirect

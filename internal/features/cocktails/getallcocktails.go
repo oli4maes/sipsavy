@@ -2,8 +2,7 @@ package cocktails
 
 import (
 	"context"
-	"github.com/google/uuid"
-	"github.com/oli4maes/sipsavy/internal/mediator"
+	"github.com/oli4maes/sipsavy/internal/infrastructure/mediator"
 )
 
 // Register getAllCocktailsHandler
@@ -19,11 +18,11 @@ type GetAllCocktailsRequest struct {
 }
 
 type GetAllCocktailsResponse struct {
-	Cocktails []CocktailDto
+	Cocktails []cocktailDto
 }
 
-type CocktailDto struct {
-	Id   uuid.UUID
+type cocktailDto struct {
+	Id   int
 	Name string
 }
 
@@ -36,7 +35,7 @@ type getAllCocktailsHandler struct{}
 
 func (h getAllCocktailsHandler) Handle(request GetAllCocktailsRequest) (GetAllCocktailsResponse, error) {
 	// TODO: fetch this data from a repository or a query facade?
-	var cocktails []CocktailDto
+	var cocktails []cocktailDto
 
 	response := GetAllCocktailsResponse{
 		Cocktails: cocktails,
