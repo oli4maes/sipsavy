@@ -84,7 +84,7 @@ func (repo *CocktailRepository) GetAll() ([]Cocktail, error) {
 	return cocktails, nil
 }
 
-func (repo *CocktailRepository) CreateCocktail(cocktail Cocktail) (Cocktail, error) {
+func (repo *CocktailRepository) Create(cocktail Cocktail) (Cocktail, error) {
 	cocktailQuery := `INSERT INTO Mixology.Mixology.Cocktails (Name, Created, CreatedBy, LastModified, LastModifiedBy)	
 						OUTPUT inserted.Id
 						VALUES (@name, @created, @createdBy, @lastModified, @lastModifiedBy)`

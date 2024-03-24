@@ -1,6 +1,7 @@
 package relational
 
 import (
+	"context"
 	"database/sql"
 	_ "github.com/microsoft/go-mssqldb"
 	_ "github.com/microsoft/go-mssqldb/integratedauth/krb5"
@@ -9,16 +10,20 @@ import (
 )
 
 type IngredientRepository struct {
-	db *sql.DB
+	db  *sql.DB
+	ctx context.Context
 }
 
-func NewIngredientRepository(connString string) IngredientRepository {
+func NewIngredientRepository(connString string, ctx context.Context) IngredientRepository {
 	sqlDb, err := sql.Open("sqlserver", connString)
 	if err != nil {
 		log.Fatalf("could not create connection: %s", err)
 	}
 
-	return IngredientRepository{db: sqlDb}
+	return IngredientRepository{
+		db:  sqlDb,
+		ctx: ctx,
+	}
 }
 
 type Ingredient struct {
@@ -70,4 +75,32 @@ func (repo *IngredientRepository) GetAll() ([]Ingredient, error) {
 	}
 
 	return ingredients, nil
+}
+
+func (repo *IngredientRepository) Create(ingredient Ingredient) (Ingredient, error) {
+	query := `INSERT INTO Mixology.Mixology.Ingredients (Name, Created, CreatedBy, LastModified, LastModifiedBy) 
+				OUTPUT inserted.Id
+				VALUES(@name, @created, @createdBy, @lastModified, @lastModifiedBy)`
+
+	defer repo.db.Close()
+
+	var id int
+	rows, err := repo.db.QueryContext(
+		repo.ctx,
+		query,
+		sql.Named("name", ingredient.Name),
+		sql.Named("created", ingredient.Created),
+		sql.Named("createdBy", ingredient.CreatedBy),
+		sql.Named("lastModified", ingredient.LastModified),
+		sql.Named("lastModifiedBy", ingredient.LastModifiedBy))
+	if err != nil {
+		return Ingredient{}, err
+	}
+
+	for rows.Next() {
+		err = rows.Scan(&id)
+	}
+	ingredient.Id = id
+
+	return ingredient, nil
 }

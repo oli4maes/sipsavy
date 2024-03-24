@@ -10,6 +10,7 @@ func InitServer() {
 
 	// Ingredient routes
 	mux.HandleFunc("GET /api/ingredient", GetAllIngredients)
+	mux.HandleFunc("POST /api/ingredient", CreateIngredient)
 
 	// Cocktail routes
 	mux.HandleFunc("GET /api/cocktail", GetAllCocktails)

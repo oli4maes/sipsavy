@@ -1,6 +1,7 @@
-package features
+package ingredientfeatures
 
 import (
+	"context"
 	"github.com/oli4maes/sipsavy/internal/infrastructure/mediator"
 	"github.com/oli4maes/sipsavy/internal/infrastructure/persistence/relational"
 	"log"
@@ -14,7 +15,7 @@ func init() {
 		panic("connection string env variable not set")
 	}
 
-	repo := relational.NewIngredientRepository(connString)
+	repo := relational.NewIngredientRepository(connString, context.Background())
 
 	err := mediator.Register[GetAllIngredientsRequest, GetAllIngredientsResponse](getAllIngredientsHandler{repo: repo})
 	if err != nil {

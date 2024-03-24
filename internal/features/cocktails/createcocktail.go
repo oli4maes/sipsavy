@@ -1,4 +1,4 @@
-package features
+package cocktailfeatures
 
 import (
 	"context"
@@ -74,7 +74,7 @@ func (h createCocktailHandler) Handle(request CreateCocktailRequest) (CreateCock
 		Ingredients:    ingredients,
 	}
 
-	createdCocktail, err := h.repo.CreateCocktail(cocktail)
+	createdCocktail, err := h.repo.Create(cocktail)
 	if err != nil {
 		return CreateCocktailResponse{}, err
 	}

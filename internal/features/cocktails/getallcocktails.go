@@ -1,4 +1,4 @@
-package features
+package cocktailfeatures
 
 import (
 	"context"
