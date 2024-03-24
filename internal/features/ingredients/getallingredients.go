@@ -1,4 +1,4 @@
-package ingredients
+package features
 
 import (
 	"github.com/oli4maes/sipsavy/internal/infrastructure/mediator"

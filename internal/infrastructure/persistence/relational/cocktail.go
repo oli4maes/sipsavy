@@ -26,6 +26,14 @@ type Cocktail struct {
 	CreatedBy      string
 	LastModified   time.Time
 	LastModifiedBy string
+	Ingredients    []CocktailIngredient
+}
+
+type CocktailIngredient struct {
+	CocktailId     int
+	IngredientId   int
+	Amount         int
+	IngredientUnit string
 }
 
 func (repo *CocktailRepository) GetAll() ([]Cocktail, error) {
@@ -67,4 +75,8 @@ func (repo *CocktailRepository) GetAll() ([]Cocktail, error) {
 	}
 
 	return cocktails, nil
+}
+
+func (repo *CocktailRepository) CreateCocktail(cocktail Cocktail, ingredients []CocktailIngredient) (Cocktail, error) {
+	return Cocktail{}, nil
 }

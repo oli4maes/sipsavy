@@ -9,8 +9,8 @@ import (
 )
 
 func GetAllIngredients(w http.ResponseWriter, r *http.Request) {
-	req := ingredients.GetAllIngredientsRequest{}
-	res, err := mediator.Send[ingredients.GetAllIngredientsRequest, ingredients.GetAllIngredientsResponse](req)
+	req := features.GetAllIngredientsRequest{}
+	res, err := mediator.Send[features.GetAllIngredientsRequest, features.GetAllIngredientsResponse](req)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprintf(w, err.Error())

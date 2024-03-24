@@ -1,4 +1,4 @@
-package cocktails
+package features
 
 import (
 	"github.com/oli4maes/sipsavy/internal/infrastructure/mediator"
@@ -25,10 +25,10 @@ func init() {
 type GetAllCocktailsRequest struct{}
 
 type GetAllCocktailsResponse struct {
-	Cocktails []cocktailDto `json:"cocktails"`
+	Cocktails []getAllCocktailDto `json:"cocktails"`
 }
 
-type cocktailDto struct {
+type getAllCocktailDto struct {
 	Id   int    `json:"id"`
 	Name string `json:"name"`
 }
@@ -48,13 +48,13 @@ func (h getAllCocktailsHandler) Handle(request GetAllCocktailsRequest) (GetAllCo
 		log.Fatalf("could not fetch ingredients: %v", err)
 	}
 	if cocktails == nil {
-		return GetAllCocktailsResponse{Cocktails: []cocktailDto{}}, nil
+		return GetAllCocktailsResponse{Cocktails: []getAllCocktailDto{}}, nil
 	}
 
-	var dtos []cocktailDto
+	var dtos []getAllCocktailDto
 
 	for _, i := range cocktails {
-		dto := cocktailDto{
+		dto := getAllCocktailDto{
 			Id:   i.Id,
 			Name: i.Name,
 		}
