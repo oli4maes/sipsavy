@@ -1,29 +1,36 @@
 package cocktails
 
 import (
-	"context"
 	"github.com/oli4maes/sipsavy/internal/infrastructure/mediator"
+	"github.com/oli4maes/sipsavy/internal/infrastructure/persistence/relational"
+	"log"
+	"os"
 )
 
 // Register getAllCocktailsHandler
 func init() {
-	err := mediator.Register[GetAllCocktailsRequest, GetAllCocktailsResponse](getAllCocktailsHandler{})
+	connString, exists := os.LookupEnv("CONNECTION_STRING")
+	if !exists {
+		panic("connection string env variable not set")
+	}
+
+	repo := relational.NewCocktailRepository(connString)
+
+	err := mediator.Register[GetAllCocktailsRequest, GetAllCocktailsResponse](getAllCocktailsHandler{repo: repo})
 	if err != nil {
 		panic(err)
 	}
 }
 
-type GetAllCocktailsRequest struct {
-	Ctx context.Context
-}
+type GetAllCocktailsRequest struct{}
 
 type GetAllCocktailsResponse struct {
-	Cocktails []cocktailDto
+	Cocktails []cocktailDto `json:"cocktails"`
 }
 
 type cocktailDto struct {
-	Id   int
-	Name string
+	Id   int    `json:"id"`
+	Name string `json:"name"`
 }
 
 type GetAllCocktailsHandler interface {
@@ -31,14 +38,32 @@ type GetAllCocktailsHandler interface {
 }
 
 // getAllCocktailsHandler is the medaitor handler, all dependencies should be added here
-type getAllCocktailsHandler struct{}
+type getAllCocktailsHandler struct {
+	repo relational.CocktailRepository
+}
 
 func (h getAllCocktailsHandler) Handle(request GetAllCocktailsRequest) (GetAllCocktailsResponse, error) {
-	// TODO: fetch this data from a repository or a query facade?
-	var cocktails []cocktailDto
+	cocktails, err := h.repo.GetAll()
+	if err != nil {
+		log.Fatalf("could not fetch ingredients: %v", err)
+	}
+	if cocktails == nil {
+		return GetAllCocktailsResponse{Cocktails: []cocktailDto{}}, nil
+	}
+
+	var dtos []cocktailDto
+
+	for _, i := range cocktails {
+		dto := cocktailDto{
+			Id:   i.Id,
+			Name: i.Name,
+		}
+
+		dtos = append(dtos, dto)
+	}
 
 	response := GetAllCocktailsResponse{
-		Cocktails: cocktails,
+		Cocktails: dtos,
 	}
 
 	return response, nil

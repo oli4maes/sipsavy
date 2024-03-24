@@ -1,7 +1,6 @@
 package ingredients
 
 import (
-	"context"
 	"github.com/oli4maes/sipsavy/internal/infrastructure/mediator"
 	"github.com/oli4maes/sipsavy/internal/infrastructure/persistence/relational"
 	"log"
@@ -23,9 +22,7 @@ func init() {
 	}
 }
 
-type GetAllIngredientsRequest struct {
-	Ctx context.Context
-}
+type GetAllIngredientsRequest struct{}
 
 type GetAllIngredientsResponse struct {
 	Ingredients []ingredientDto `json:"ingredients"`
@@ -49,6 +46,9 @@ func (h getAllIngredientsHandler) Handle(request GetAllIngredientsRequest) (GetA
 	ingredients, err := h.repo.GetAll()
 	if err != nil {
 		log.Fatalf("could not fetch ingredients: %v", err)
+	}
+	if ingredients == nil {
+		return GetAllIngredientsResponse{Ingredients: []ingredientDto{}}, nil
 	}
 
 	var dtos []ingredientDto
