@@ -3,7 +3,7 @@ package api
 import (
 	"context"
 	"github.com/google/uuid"
-	"sipsavy/internal/mediator"
+	"github.com/oli4maes/sipsavy/internal/mediator"
 )
 
 func init() {

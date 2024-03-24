@@ -1,4 +1,4 @@
-module https://github.com/oli4maes/sipsavy
+module github.com/oli4maes/sipsavy
 
 go 1.21
 
