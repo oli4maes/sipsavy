@@ -1,43 +1,37 @@
-package api
+package main
 
 import (
 	"context"
-	"github.com/google/uuid"
-	"github.com/oli4maes/sipsavy/internal/mediator"
+	"database/sql"
+	_ "github.com/microsoft/go-mssqldb"
+	_ "github.com/microsoft/go-mssqldb/integratedauth/krb5"
+	"log"
+	"os"
+	"time"
 )
 
-func init() {
-	err := mediator.Register[GetAllCocktailsRequest, GetAllCocktailsResponse](getAllCocktailsHandler{})
+func main() {
+	connString, exists := os.LookupEnv("CONNECTION_STRING")
+	if !exists {
+		panic("connection string env variable not set")
+	}
+
+	db, err := sql.Open("sqlserver", connString)
 	if err != nil {
-		panic(err)
-	}
-}
-
-type GetAllCocktailsRequest struct {
-	Ctx context.Context
-}
-
-type GetAllCocktailsResponse struct {
-	Cocktails []CocktailDto
-}
-
-type CocktailDto struct {
-	Id   uuid.UUID
-	Name string
-}
-
-type GetAllCocktailsHandler interface {
-	Handle() (GetAllCocktailsResponse, error)
-}
-
-type getAllCocktailsHandler struct{}
-
-func (h getAllCocktailsHandler) Handle(request GetAllCocktailsRequest) (GetAllCocktailsResponse, error) {
-	var cocktails []CocktailDto
-
-	response := GetAllCocktailsResponse{
-		Cocktails: cocktails,
+		log.Fatalf("could not create connection: %s", err)
 	}
 
-	return response, nil
+	defer db.Close()
+
+	db.SetConnMaxLifetime(time.Minute * 3)
+	db.SetMaxOpenConns(10)
+	db.SetMaxIdleConns(10)
+
+	row := db.QueryRowContext(context.Background(), "SELECT name FROM Mixology.Mixology.Ingredients")
+	var name string
+	err = row.Scan(&name)
+	if err != nil {
+		log.Fatalf("could not scan rows of query: %s", err)
+	}
+	log.Printf("%s", name)
 }
