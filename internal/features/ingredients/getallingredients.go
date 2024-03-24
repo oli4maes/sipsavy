@@ -28,7 +28,7 @@ type GetAllIngredientsRequest struct {
 }
 
 type GetAllIngredientsResponse struct {
-	Ingredients []ingredientDto
+	Ingredients []ingredientDto `json:"ingredients"`
 }
 
 type ingredientDto struct {
