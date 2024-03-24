@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/oli4maes/sipsavy/internal/infrastructure/mediator"
 	"github.com/oli4maes/sipsavy/internal/infrastructure/persistence/relational"
+	"log"
 	"os"
 )
 
@@ -31,8 +32,8 @@ type GetAllIngredientsResponse struct {
 }
 
 type ingredientDto struct {
-	Id   int
-	Name string
+	Id   int    `json:"id"`
+	Name string `json:"name"`
 }
 
 type GetAllIngredientsHandler interface {
@@ -45,11 +46,24 @@ type getAllIngredientsHandler struct {
 }
 
 func (h getAllIngredientsHandler) Handle(request GetAllIngredientsRequest) (GetAllIngredientsResponse, error) {
-	// TODO: fetch this data from a repository or a query facade?
-	var ingredients []ingredientDto
+	ingredients, err := h.repo.GetAll()
+	if err != nil {
+		log.Fatalf("could not fetch ingredients: %v", err)
+	}
+
+	var dtos []ingredientDto
+
+	for _, i := range ingredients {
+		dto := ingredientDto{
+			Id:   i.Id,
+			Name: i.Name,
+		}
+
+		dtos = append(dtos, dto)
+	}
 
 	response := GetAllIngredientsResponse{
-		Ingredients: ingredients,
+		Ingredients: dtos,
 	}
 
 	return response, nil

@@ -8,6 +8,8 @@ import (
 
 func InitServer() {
 	mux := http.NewServeMux()
+
+	// Ingredient routes
 	mux.HandleFunc("GET /api/ingredient", ingredients.GetAll)
 
 	log.Print("Listening...")
