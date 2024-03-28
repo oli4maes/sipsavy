@@ -24,6 +24,27 @@ func GetAllCocktails(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func GetCocktailsByIngredientIds(w http.ResponseWriter, r *http.Request) {
+	var req features.GetCocktailsByIngredientsRequest
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+	}
+
+	res, err := mediator.Send[features.GetCocktailsByIngredientsRequest, features.GetCocktailsByIngredientsResponse](req)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(w, err.Error())
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	err = json.NewEncoder(w).Encode(res)
+	if err != nil {
+		return
+	}
+}
+
 func CreateCocktail(w http.ResponseWriter, r *http.Request) {
 	var req features.CreateCocktailRequest
 	err := json.NewDecoder(r.Body).Decode(&req)

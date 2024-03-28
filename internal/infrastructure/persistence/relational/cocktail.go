@@ -3,9 +3,11 @@ package relational
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	_ "github.com/microsoft/go-mssqldb"
 	_ "github.com/microsoft/go-mssqldb/integratedauth/krb5"
 	"log"
+	"strings"
 	"time"
 )
 
@@ -126,4 +128,47 @@ func (repo *CocktailRepository) Create(cocktail Cocktail) (Cocktail, error) {
 	}
 
 	return cocktail, nil
+}
+
+func (repo *CocktailRepository) GetByIngredientIds(ingredientIds []int) ([]Cocktail, error) {
+	var cocktails []Cocktail
+
+	ids := strings.Trim(strings.Join(strings.Fields(fmt.Sprint(ingredientIds)),
+		","), "[]")
+
+	query := fmt.Sprintf(
+		"SELECT c.Id, c.Name FROM Mixology.Mixology.Cocktails c "+
+			"JOIN Mixology.Mixology.CocktailIngredients ci ON c.Id = ci.CocktailId "+
+			"WHERE ci.IngredientId IN (%s) "+
+			"GROUP BY c.Id, c.Name", ids)
+
+	rows, err := repo.db.QueryContext(repo.ctx, query)
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+	defer repo.db.Close()
+
+	var id int
+	var name string
+	for rows.Next() {
+		if err := rows.Scan(&id, &name); err != nil {
+			return nil, err
+		}
+
+		var cocktail = Cocktail{
+			Id:   id,
+			Name: name,
+		}
+
+		cocktails = append(cocktails, cocktail)
+	}
+
+	err = rows.Err()
+	if err != nil {
+		return nil, err
+	}
+
+	return cocktails, nil
 }

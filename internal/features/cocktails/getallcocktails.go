@@ -17,7 +17,7 @@ func init() {
 
 	repo := relational.NewCocktailRepository(connString, context.Background())
 
-	err := mediator.Register[GetAllCocktailsRequest, GetAllCocktailsResponse](getAllCocktailsHandler{repo: repo})
+	err := mediator.Register[GetAllCocktailsRequest, GetAllCocktailsResponse](getAllCocktailsHandler{repo})
 	if err != nil {
 		panic(err)
 	}
@@ -54,10 +54,10 @@ func (h getAllCocktailsHandler) Handle(request GetAllCocktailsRequest) (GetAllCo
 
 	var dtos []getAllCocktailDto
 
-	for _, i := range cocktails {
+	for _, c := range cocktails {
 		dto := getAllCocktailDto{
-			Id:   i.Id,
-			Name: i.Name,
+			Id:   c.Id,
+			Name: c.Name,
 		}
 
 		dtos = append(dtos, dto)
