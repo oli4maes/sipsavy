@@ -2,10 +2,11 @@ package ingredientfeatures
 
 import (
 	"context"
-	"github.com/oli4maes/sipsavy/internal/infrastructure/mediator"
-	"github.com/oli4maes/sipsavy/internal/infrastructure/persistence/relational"
 	"os"
 	"time"
+
+	"github.com/oli4maes/sipsavy/internal/infrastructure/mediator"
+	"github.com/oli4maes/sipsavy/internal/infrastructure/persistence/relational"
 )
 
 // Register createIngredientHandler
@@ -15,7 +16,7 @@ func init() {
 		panic("connection string env variable not set")
 	}
 
-	repo := relational.NewIngredientRepository(connString, context.Background())
+	repo := relational.NewIngredientRepository(connString)
 
 	err := mediator.Register[CreateIngredientRequest, CreateIngredientResponse](createIngredientHandler{repo: repo})
 	if err != nil {
@@ -45,7 +46,7 @@ type createIngredientHandler struct {
 	repo relational.IngredientRepository
 }
 
-func (h createIngredientHandler) Handle(request CreateIngredientRequest) (CreateIngredientResponse, error) {
+func (h createIngredientHandler) Handle(ctx context.Context, request CreateIngredientRequest) (CreateIngredientResponse, error) {
 	ingredient := relational.Ingredient{
 		Name:           request.Name,
 		Created:        time.Now(),
@@ -54,7 +55,7 @@ func (h createIngredientHandler) Handle(request CreateIngredientRequest) (Create
 		LastModifiedBy: "test",
 	}
 
-	createdIngredient, err := h.repo.Create(ingredient)
+	createdIngredient, err := h.repo.Create(ctx, ingredient)
 	if err != nil {
 		return CreateIngredientResponse{}, err
 	}

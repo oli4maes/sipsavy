@@ -2,10 +2,11 @@ package cocktailfeatures
 
 import (
 	"context"
-	"github.com/oli4maes/sipsavy/internal/infrastructure/mediator"
-	"github.com/oli4maes/sipsavy/internal/infrastructure/persistence/relational"
 	"os"
 	"time"
+
+	"github.com/oli4maes/sipsavy/internal/infrastructure/mediator"
+	"github.com/oli4maes/sipsavy/internal/infrastructure/persistence/relational"
 )
 
 // Register createCocktailHandler
@@ -15,7 +16,7 @@ func init() {
 		panic("connection string env variable not set")
 	}
 
-	repo := relational.NewCocktailRepository(connString, context.Background())
+	repo := relational.NewCocktailRepository(connString)
 
 	err := mediator.Register[CreateCocktailRequest, CreateCocktailResponse](createCocktailHandler{repo: repo})
 	if err != nil {
@@ -52,7 +53,7 @@ type createCocktailHandler struct {
 	repo relational.CocktailRepository
 }
 
-func (h createCocktailHandler) Handle(request CreateCocktailRequest) (CreateCocktailResponse, error) {
+func (h createCocktailHandler) Handle(ctx context.Context, request CreateCocktailRequest) (CreateCocktailResponse, error) {
 	var ingredients []relational.CocktailIngredient
 
 	for _, i := range request.Ingredients {
@@ -74,7 +75,7 @@ func (h createCocktailHandler) Handle(request CreateCocktailRequest) (CreateCock
 		Ingredients:    ingredients,
 	}
 
-	createdCocktail, err := h.repo.Create(cocktail)
+	createdCocktail, err := h.repo.Create(ctx, cocktail)
 	if err != nil {
 		return CreateCocktailResponse{}, err
 	}

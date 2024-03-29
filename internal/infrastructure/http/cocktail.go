@@ -3,14 +3,16 @@ package http
 import (
 	"encoding/json"
 	"fmt"
+	"net/http"
+
 	features "github.com/oli4maes/sipsavy/internal/features/cocktails"
 	"github.com/oli4maes/sipsavy/internal/infrastructure/mediator"
-	"net/http"
 )
 
 func GetAllCocktails(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 	req := features.GetAllCocktailsRequest{}
-	res, err := mediator.Send[features.GetAllCocktailsRequest, features.GetAllCocktailsResponse](req)
+	res, err := mediator.Send[features.GetAllCocktailsRequest, features.GetAllCocktailsResponse](req, ctx)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprintf(w, err.Error())
@@ -25,13 +27,14 @@ func GetAllCocktails(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetCocktailsByIngredientIds(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 	var req features.GetCocktailsByIngredientsRequest
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 	}
 
-	res, err := mediator.Send[features.GetCocktailsByIngredientsRequest, features.GetCocktailsByIngredientsResponse](req)
+	res, err := mediator.Send[features.GetCocktailsByIngredientsRequest, features.GetCocktailsByIngredientsResponse](req, ctx)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprintf(w, err.Error())
@@ -46,6 +49,7 @@ func GetCocktailsByIngredientIds(w http.ResponseWriter, r *http.Request) {
 }
 
 func CreateCocktail(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 	var req features.CreateCocktailRequest
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
@@ -53,7 +57,7 @@ func CreateCocktail(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res, err := mediator.Send[features.CreateCocktailRequest, features.CreateCocktailResponse](req)
+	res, err := mediator.Send[features.CreateCocktailRequest, features.CreateCocktailResponse](req, ctx)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprintf(w, err.Error())

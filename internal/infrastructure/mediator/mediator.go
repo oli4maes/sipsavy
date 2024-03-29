@@ -1,6 +1,7 @@
 package mediator
 
 import (
+	"context"
 	"errors"
 	"reflect"
 	"sync"
@@ -14,7 +15,7 @@ func init() {
 	registeredHandlers = sync.Map{}
 }
 
-type key[TRequest any, TResponse any] struct {}
+type key[TRequest any, TResponse any] struct{}
 
 func Register[TRequest any, TResponse any](handler RequestHandler[TRequest, TResponse]) error {
 	k := key[TRequest, TResponse]{}
@@ -26,7 +27,7 @@ func Register[TRequest any, TResponse any](handler RequestHandler[TRequest, TRes
 	return nil
 }
 
-func Send[TRequest any, TResponse any](r TRequest) (TResponse, error) {
+func Send[TRequest any, TResponse any](r TRequest, ctx context.Context) (TResponse, error) {
 	var noResponse TResponse
 
 	var k key[TRequest, TResponse]
@@ -37,12 +38,12 @@ func Send[TRequest any, TResponse any](r TRequest) (TResponse, error) {
 
 	switch handler := handler.(type) {
 	case RequestHandler[TRequest, TResponse]:
-		return handler.Handle(r)
+		return handler.Handle(ctx, r)
 	}
 
 	return noResponse, errors.New("handler not valid")
 }
 
 type RequestHandler[TRequest any, TResponse any] interface {
-	Handle(request TRequest) (TResponse, error)
+	Handle(ctx context.Context, request TRequest) (TResponse, error)
 }

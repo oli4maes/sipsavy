@@ -2,10 +2,11 @@ package cocktailfeatures
 
 import (
 	"context"
-	"github.com/oli4maes/sipsavy/internal/infrastructure/mediator"
-	"github.com/oli4maes/sipsavy/internal/infrastructure/persistence/relational"
 	"log"
 	"os"
+
+	"github.com/oli4maes/sipsavy/internal/infrastructure/mediator"
+	"github.com/oli4maes/sipsavy/internal/infrastructure/persistence/relational"
 )
 
 // Register getCocktailsByIngredientsHandler
@@ -15,7 +16,7 @@ func init() {
 		panic("connection string env variable not set")
 	}
 
-	repo := relational.NewCocktailRepository(connString, context.Background())
+	repo := relational.NewCocktailRepository(connString)
 
 	err := mediator.Register[GetCocktailsByIngredientsRequest, GetCocktailsByIngredientsResponse](getCocktailsByIngredientsHandler{repo})
 	if err != nil {
@@ -45,8 +46,8 @@ type getCocktailsByIngredientsHandler struct {
 	repo relational.CocktailRepository
 }
 
-func (h getCocktailsByIngredientsHandler) Handle(request GetCocktailsByIngredientsRequest) (GetCocktailsByIngredientsResponse, error) {
-	cocktails, err := h.repo.GetByIngredientIds(request.IngredientIds)
+func (h getCocktailsByIngredientsHandler) Handle(ctx context.Context, request GetCocktailsByIngredientsRequest) (GetCocktailsByIngredientsResponse, error) {
+	cocktails, err := h.repo.GetByIngredientIds(ctx, request.IngredientIds)
 	if err != nil {
 		log.Fatalf("could not fetch cocktails by ingredient ids: %v", err)
 	}

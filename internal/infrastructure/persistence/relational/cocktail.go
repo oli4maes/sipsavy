@@ -4,28 +4,25 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	_ "github.com/microsoft/go-mssqldb"
-	_ "github.com/microsoft/go-mssqldb/integratedauth/krb5"
 	"log"
 	"strings"
 	"time"
+
+	_ "github.com/microsoft/go-mssqldb"
+	_ "github.com/microsoft/go-mssqldb/integratedauth/krb5"
 )
 
 type CocktailRepository struct {
-	db  *sql.DB
-	ctx context.Context
+	db *sql.DB
 }
 
-func NewCocktailRepository(connString string, ctx context.Context) CocktailRepository {
+func NewCocktailRepository(connString string) CocktailRepository {
 	sqlDb, err := sql.Open("sqlserver", connString)
 	if err != nil {
 		log.Fatalf("could not create connection: %s", err)
 	}
 
-	return CocktailRepository{
-		db:  sqlDb,
-		ctx: ctx,
-	}
+	return CocktailRepository{db: sqlDb}
 }
 
 type Cocktail struct {
@@ -45,12 +42,12 @@ type CocktailIngredient struct {
 	IngredientUnit string
 }
 
-func (repo *CocktailRepository) GetAll() ([]Cocktail, error) {
+func (repo *CocktailRepository) GetAll(ctx context.Context) ([]Cocktail, error) {
 	var cocktails []Cocktail
 
 	query := `SELECT * FROM Mixology.Mixology.Cocktails`
 
-	rows, err := repo.db.Query(query)
+	rows, err := repo.db.QueryContext(ctx, query)
 	if err != nil {
 		return nil, err
 	}
@@ -86,7 +83,7 @@ func (repo *CocktailRepository) GetAll() ([]Cocktail, error) {
 	return cocktails, nil
 }
 
-func (repo *CocktailRepository) Create(cocktail Cocktail) (Cocktail, error) {
+func (repo *CocktailRepository) Create(ctx context.Context, cocktail Cocktail) (Cocktail, error) {
 	cocktailQuery := `INSERT INTO Mixology.Mixology.Cocktails (Name, Created, CreatedBy, LastModified, LastModifiedBy)	
 						OUTPUT inserted.Id
 						VALUES (@name, @created, @createdBy, @lastModified, @lastModifiedBy)`
@@ -98,7 +95,7 @@ func (repo *CocktailRepository) Create(cocktail Cocktail) (Cocktail, error) {
 
 	var id int
 	rows, err := repo.db.QueryContext(
-		repo.ctx,
+		ctx,
 		cocktailQuery,
 		sql.Named("name", cocktail.Name),
 		sql.Named("created", cocktail.Created),
@@ -115,7 +112,8 @@ func (repo *CocktailRepository) Create(cocktail Cocktail) (Cocktail, error) {
 	cocktail.Id = id
 
 	for _, i := range cocktail.Ingredients {
-		_, err := repo.db.QueryContext(repo.ctx,
+		_, err := repo.db.QueryContext(
+			ctx,
 			ingredientsQuery,
 			sql.Named("cocktailId", cocktail.Id),
 			sql.Named("ingredientId", i.IngredientId),
@@ -130,7 +128,7 @@ func (repo *CocktailRepository) Create(cocktail Cocktail) (Cocktail, error) {
 	return cocktail, nil
 }
 
-func (repo *CocktailRepository) GetByIngredientIds(ingredientIds []int) ([]Cocktail, error) {
+func (repo *CocktailRepository) GetByIngredientIds(ctx context.Context, ingredientIds []int) ([]Cocktail, error) {
 	var cocktails []Cocktail
 
 	ids := strings.Trim(strings.Join(strings.Fields(fmt.Sprint(ingredientIds)),
@@ -142,7 +140,7 @@ func (repo *CocktailRepository) GetByIngredientIds(ingredientIds []int) ([]Cockt
 			"WHERE ci.IngredientId IN (%s) "+
 			"GROUP BY c.Id, c.Name", ids)
 
-	rows, err := repo.db.QueryContext(repo.ctx, query)
+	rows, err := repo.db.QueryContext(ctx, query)
 	if err != nil {
 		return nil, err
 	}
