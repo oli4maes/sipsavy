@@ -27,7 +27,7 @@ func Register[TRequest any, TResponse any](handler RequestHandler[TRequest, TRes
 	return nil
 }
 
-func Send[TRequest any, TResponse any](r TRequest, ctx context.Context) (TResponse, error) {
+func Send[TRequest any, TResponse any](ctx context.Context, r TRequest) (TResponse, error) {
 	var noResponse TResponse
 
 	var k key[TRequest, TResponse]

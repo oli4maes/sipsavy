@@ -13,7 +13,7 @@ import (
 func GetAllIngredients(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	req := getallingredients.Request{}
-	res, err := mediator.Send[getallingredients.Request, getallingredients.Response](req, ctx)
+	res, err := mediator.Send[getallingredients.Request, getallingredients.Response](ctx, req)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprintf(w, err.Error())
@@ -36,7 +36,7 @@ func CreateIngredient(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res, err := mediator.Send[createingredient.Request, createingredient.Response](req, ctx)
+	res, err := mediator.Send[createingredient.Request, createingredient.Response](ctx, req)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprintf(w, err.Error())
