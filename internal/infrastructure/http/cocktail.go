@@ -5,14 +5,16 @@ import (
 	"fmt"
 	"net/http"
 
-	features "github.com/oli4maes/sipsavy/internal/features/cocktails"
+	"github.com/oli4maes/sipsavy/internal/features/cocktails/createcocktail"
+	"github.com/oli4maes/sipsavy/internal/features/cocktails/getallcocktails"
+	"github.com/oli4maes/sipsavy/internal/features/cocktails/getcocktailsbyingredients"
 	"github.com/oli4maes/sipsavy/internal/infrastructure/mediator"
 )
 
 func GetAllCocktails(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	req := features.GetAllCocktailsRequest{}
-	res, err := mediator.Send[features.GetAllCocktailsRequest, features.GetAllCocktailsResponse](req, ctx)
+	req := getallcocktails.Request{}
+	res, err := mediator.Send[getallcocktails.Request, getallcocktails.Response](req, ctx)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprintf(w, err.Error())
@@ -28,13 +30,13 @@ func GetAllCocktails(w http.ResponseWriter, r *http.Request) {
 
 func GetCocktailsByIngredientIds(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	var req features.GetCocktailsByIngredientsRequest
+	var req getcocktailsbyingredients.Request
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 	}
 
-	res, err := mediator.Send[features.GetCocktailsByIngredientsRequest, features.GetCocktailsByIngredientsResponse](req, ctx)
+	res, err := mediator.Send[getcocktailsbyingredients.Request, getcocktailsbyingredients.Response](req, ctx)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprintf(w, err.Error())
@@ -50,14 +52,14 @@ func GetCocktailsByIngredientIds(w http.ResponseWriter, r *http.Request) {
 
 func CreateCocktail(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	var req features.CreateCocktailRequest
+	var req createcocktail.Request
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	res, err := mediator.Send[features.CreateCocktailRequest, features.CreateCocktailResponse](req, ctx)
+	res, err := mediator.Send[createcocktail.Request, createcocktail.Response](req, ctx)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprintf(w, err.Error())

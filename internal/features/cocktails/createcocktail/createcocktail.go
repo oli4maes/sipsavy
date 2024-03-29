@@ -1,4 +1,4 @@
-package cocktailfeatures
+package createcocktail
 
 import (
 	"context"
@@ -18,13 +18,13 @@ func init() {
 
 	repo := relational.NewCocktailRepository(connString)
 
-	err := mediator.Register[CreateCocktailRequest, CreateCocktailResponse](createCocktailHandler{repo: repo})
+	err := mediator.Register[Request, Response](handler{repo: repo})
 	if err != nil {
 		panic(err)
 	}
 }
 
-type CreateCocktailRequest struct {
+type Request struct {
 	Name        string                    `json:"name"`
 	Ingredients []IngredientWithAmountDto `json:"ingredients"`
 }
@@ -35,25 +35,25 @@ type IngredientWithAmountDto struct {
 	Unit         string `json:"unit"`
 }
 
-type CreateCocktailResponse struct {
-	Cocktail createCocktailDto `json:"cocktail"`
+type Response struct {
+	Cocktail cocktailDto `json:"cocktail"`
 }
 
-type createCocktailDto struct {
+type cocktailDto struct {
 	Id   int    `json:"id"`
 	Name string `json:"name"`
 }
 
-type CreateCocktailHandler interface {
-	Handle() (CreateCocktailRequest, error)
+type Handler interface {
+	Handle() (Request, error)
 }
 
-// createCocktailHandler is the mediator handler, all dependencies should be added here
-type createCocktailHandler struct {
+// handler is the mediator handler, all dependencies should be added here
+type handler struct {
 	repo relational.CocktailRepository
 }
 
-func (h createCocktailHandler) Handle(ctx context.Context, request CreateCocktailRequest) (CreateCocktailResponse, error) {
+func (h handler) Handle(ctx context.Context, request Request) (Response, error) {
 	var ingredients []relational.CocktailIngredient
 
 	for _, i := range request.Ingredients {
@@ -77,11 +77,11 @@ func (h createCocktailHandler) Handle(ctx context.Context, request CreateCocktai
 
 	createdCocktail, err := h.repo.Create(ctx, cocktail)
 	if err != nil {
-		return CreateCocktailResponse{}, err
+		return Response{}, err
 	}
 
-	return CreateCocktailResponse{
-		Cocktail: createCocktailDto{
+	return Response{
+		Cocktail: cocktailDto{
 			Id:   createdCocktail.Id,
 			Name: createdCocktail.Name,
 		},

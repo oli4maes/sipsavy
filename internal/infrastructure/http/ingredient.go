@@ -5,14 +5,15 @@ import (
 	"fmt"
 	"net/http"
 
-	features "github.com/oli4maes/sipsavy/internal/features/ingredients"
+	"github.com/oli4maes/sipsavy/internal/features/ingredients/createingredient"
+	"github.com/oli4maes/sipsavy/internal/features/ingredients/getallingredients"
 	"github.com/oli4maes/sipsavy/internal/infrastructure/mediator"
 )
 
 func GetAllIngredients(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	req := features.GetAllIngredientsRequest{}
-	res, err := mediator.Send[features.GetAllIngredientsRequest, features.GetAllIngredientsResponse](req, ctx)
+	req := getallingredients.Request{}
+	res, err := mediator.Send[getallingredients.Request, getallingredients.Response](req, ctx)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprintf(w, err.Error())
@@ -28,14 +29,14 @@ func GetAllIngredients(w http.ResponseWriter, r *http.Request) {
 
 func CreateIngredient(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	var req features.CreateIngredientRequest
+	var req createingredient.Request
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	res, err := mediator.Send[features.CreateIngredientRequest, features.CreateIngredientResponse](req, ctx)
+	res, err := mediator.Send[createingredient.Request, createingredient.Response](req, ctx)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprintf(w, err.Error())

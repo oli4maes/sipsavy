@@ -1,4 +1,4 @@
-package ingredientfeatures
+package getallingredients
 
 import (
 	"context"
@@ -9,7 +9,7 @@ import (
 	"github.com/oli4maes/sipsavy/internal/infrastructure/persistence/relational"
 )
 
-// Register getAllCocktailsHandler
+// Register handler
 func init() {
 	connString, exists := os.LookupEnv("CONNECTION_STRING")
 	if !exists {
@@ -18,15 +18,15 @@ func init() {
 
 	repo := relational.NewIngredientRepository(connString)
 
-	err := mediator.Register[GetAllIngredientsRequest, GetAllIngredientsResponse](getAllIngredientsHandler{repo: repo})
+	err := mediator.Register[Request, Response](handler{repo: repo})
 	if err != nil {
 		panic(err)
 	}
 }
 
-type GetAllIngredientsRequest struct{}
+type Request struct{}
 
-type GetAllIngredientsResponse struct {
+type Response struct {
 	Ingredients []ingredientDto `json:"ingredients"`
 }
 
@@ -35,22 +35,22 @@ type ingredientDto struct {
 	Name string `json:"name"`
 }
 
-type GetAllIngredientsHandler interface {
-	Handle() (GetAllIngredientsResponse, error)
+type Handler interface {
+	Handle() (Response, error)
 }
 
-// getAllIngredientsHandler is the medaitor handler, all dependencies should be added here
-type getAllIngredientsHandler struct {
+// handler is the medaitor handler, all dependencies should be added here
+type handler struct {
 	repo relational.IngredientRepository
 }
 
-func (h getAllIngredientsHandler) Handle(ctx context.Context, request GetAllIngredientsRequest) (GetAllIngredientsResponse, error) {
+func (h handler) Handle(ctx context.Context, request Request) (Response, error) {
 	ingredients, err := h.repo.GetAll(ctx)
 	if err != nil {
 		log.Fatalf("could not fetch ingredients: %v", err)
 	}
 	if ingredients == nil {
-		return GetAllIngredientsResponse{Ingredients: []ingredientDto{}}, nil
+		return Response{Ingredients: []ingredientDto{}}, nil
 	}
 
 	var dtos []ingredientDto
@@ -64,7 +64,7 @@ func (h getAllIngredientsHandler) Handle(ctx context.Context, request GetAllIngr
 		dtos = append(dtos, dto)
 	}
 
-	response := GetAllIngredientsResponse{
+	response := Response{
 		Ingredients: dtos,
 	}
 

@@ -1,4 +1,4 @@
-package ingredientfeatures
+package createingredient
 
 import (
 	"context"
@@ -9,7 +9,7 @@ import (
 	"github.com/oli4maes/sipsavy/internal/infrastructure/persistence/relational"
 )
 
-// Register createIngredientHandler
+// Register handler
 func init() {
 	connString, exists := os.LookupEnv("CONNECTION_STRING")
 	if !exists {
@@ -18,35 +18,35 @@ func init() {
 
 	repo := relational.NewIngredientRepository(connString)
 
-	err := mediator.Register[CreateIngredientRequest, CreateIngredientResponse](createIngredientHandler{repo: repo})
+	err := mediator.Register[Request, Response](handler{repo: repo})
 	if err != nil {
 		panic(err)
 	}
 }
 
-type CreateIngredientRequest struct {
+type Request struct {
 	Name string `json:"name"`
 }
 
-type CreateIngredientResponse struct {
-	Ingredient createIngredientDto `json:"ingredient"`
+type Response struct {
+	Ingredient ingredientDto `json:"ingredient"`
 }
 
-type createIngredientDto struct {
+type ingredientDto struct {
 	Id   int    `json:"id"`
 	Name string `json:"name"`
 }
 
-type CreateIngredientHandler interface {
-	Handle() (CreateIngredientRequest, error)
+type Handler interface {
+	Handle() (Request, error)
 }
 
-// createIngredientHandler is the mediator handler, all dependencies should be added here
-type createIngredientHandler struct {
+// handler is the mediator handler, all dependencies should be added here
+type handler struct {
 	repo relational.IngredientRepository
 }
 
-func (h createIngredientHandler) Handle(ctx context.Context, request CreateIngredientRequest) (CreateIngredientResponse, error) {
+func (h handler) Handle(ctx context.Context, request Request) (Response, error) {
 	ingredient := relational.Ingredient{
 		Name:           request.Name,
 		Created:        time.Now(),
@@ -57,11 +57,11 @@ func (h createIngredientHandler) Handle(ctx context.Context, request CreateIngre
 
 	createdIngredient, err := h.repo.Create(ctx, ingredient)
 	if err != nil {
-		return CreateIngredientResponse{}, err
+		return Response{}, err
 	}
 
-	return CreateIngredientResponse{
-		Ingredient: createIngredientDto{
+	return Response{
+		Ingredient: ingredientDto{
 			Id:   createdIngredient.Id,
 			Name: createdIngredient.Name,
 		},
