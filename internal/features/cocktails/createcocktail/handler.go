@@ -24,26 +24,6 @@ func init() {
 	}
 }
 
-type Request struct {
-	Name        string                    `json:"name"`
-	Ingredients []IngredientWithAmountDto `json:"ingredients"`
-}
-
-type IngredientWithAmountDto struct {
-	IngredientId int    `json:"ingredient_id"`
-	Amount       int    `json:"amount"`
-	Unit         string `json:"unit"`
-}
-
-type Response struct {
-	Cocktail cocktailDto `json:"cocktail"`
-}
-
-type cocktailDto struct {
-	Id   int    `json:"id"`
-	Name string `json:"name"`
-}
-
 type Handler interface {
 	Handle() (Request, error)
 }

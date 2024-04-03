@@ -36,6 +36,12 @@ func CreateIngredient(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	err = req.Validate()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
 	res, err := mediator.Send[createingredient.Request, createingredient.Response](ctx, req)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
