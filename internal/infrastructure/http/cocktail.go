@@ -36,6 +36,11 @@ func GetCocktailsByIngredientIds(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 	}
 
+	err = req.Validate()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+	}
+
 	res, err := mediator.Send[getcocktailsbyingredients.Request, getcocktailsbyingredients.Response](ctx, req)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -57,6 +62,11 @@ func CreateCocktail(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
+	}
+
+	err = req.Validate()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
 	}
 
 	res, err := mediator.Send[createcocktail.Request, createcocktail.Response](ctx, req)

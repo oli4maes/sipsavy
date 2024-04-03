@@ -1,4 +1,4 @@
-package getallcocktails
+package getcocktailsbyingredients
 
 import (
 	"context"
@@ -24,30 +24,19 @@ func init() {
 	}
 }
 
-type Request struct{}
-
-type Response struct {
-	Cocktails []cocktailDto `json:"cocktails"`
-}
-
-type cocktailDto struct {
-	Id   int    `json:"id"`
-	Name string `json:"name"`
-}
-
 type Handler interface {
 	Handle() (Response, error)
 }
 
-// handler is the medaitor handler, all dependencies should be added here
+// handler is the mediator handler, all dependencies should be added here
 type handler struct {
 	repo relational.CocktailRepository
 }
 
 func (h handler) Handle(ctx context.Context, request Request) (Response, error) {
-	cocktails, err := h.repo.GetAll(ctx)
+	cocktails, err := h.repo.GetByIngredientIds(ctx, request.IngredientIds)
 	if err != nil {
-		log.Fatalf("could not fetch ingredients: %v", err)
+		log.Fatalf("could not fetch cocktails by ingredient ids: %v", err)
 	}
 	if cocktails == nil {
 		return Response{Cocktails: []cocktailDto{}}, nil
@@ -64,9 +53,6 @@ func (h handler) Handle(ctx context.Context, request Request) (Response, error) 
 		dtos = append(dtos, dto)
 	}
 
-	response := Response{
-		Cocktails: dtos,
-	}
-
+	response := Response{Cocktails: dtos}
 	return response, nil
 }
