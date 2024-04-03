@@ -41,5 +41,5 @@ we will run an instance of Azure SQL Edge which has all the features we require.
 `docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD={{PASSWORD_01}}" -p 1433:1433 --name sql --hostname sql 
 -d mcr.microsoft.com/azure-sql-edge:latest`
 
-You will then need to set an environment variable: `CONNECTION_STRING` with the value: `Server=localhost,1433\;Database=Mixology\
+You will then need to set an environment variable: `CONNECTION_STRING` with the value: `Server=localhost,1433\;Database=sipsavy\
 ;User=SA\;Password={{PASSWORD_01}}\;TrustServerCertificate=True`
