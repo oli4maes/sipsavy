@@ -24,10 +24,6 @@ func init() {
 	}
 }
 
-type Handler interface {
-	Handle() (Request, error)
-}
-
 // handler is the mediator handler, all dependencies should be added here
 type handler struct {
 	repo relational.CocktailRepository
