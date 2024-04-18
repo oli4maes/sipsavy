@@ -2,10 +2,10 @@ package getallingredients
 
 import (
 	"context"
+	"github.com/oli4maes/mediator"
 	"log"
 	"os"
 
-	"github.com/oli4maes/sipsavy/internal/infrastructure/mediator"
 	"github.com/oli4maes/sipsavy/internal/infrastructure/persistence/relational"
 )
 

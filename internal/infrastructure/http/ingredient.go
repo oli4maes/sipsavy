@@ -3,11 +3,11 @@ package http
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/oli4maes/mediator"
 	"net/http"
 
 	"github.com/oli4maes/sipsavy/internal/features/ingredients/createingredient"
 	"github.com/oli4maes/sipsavy/internal/features/ingredients/getallingredients"
-	"github.com/oli4maes/sipsavy/internal/infrastructure/mediator"
 )
 
 func GetAllIngredients(w http.ResponseWriter, r *http.Request) {

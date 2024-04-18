@@ -3,12 +3,12 @@ package http
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/oli4maes/mediator"
 	"net/http"
 
 	"github.com/oli4maes/sipsavy/internal/features/cocktails/createcocktail"
 	"github.com/oli4maes/sipsavy/internal/features/cocktails/getallcocktails"
 	"github.com/oli4maes/sipsavy/internal/features/cocktails/getcocktailsbyingredients"
-	"github.com/oli4maes/sipsavy/internal/infrastructure/mediator"
 )
 
 func GetAllCocktails(w http.ResponseWriter, r *http.Request) {
