@@ -2,29 +2,28 @@ package relational
 
 import (
 	"context"
-	"database/sql"
+	"github.com/google/uuid"
+	"gorm.io/driver/sqlserver"
+	"gorm.io/gorm"
 	"log"
 	"time"
-
-	_ "github.com/microsoft/go-mssqldb"
-	_ "github.com/microsoft/go-mssqldb/integratedauth/krb5"
 )
 
 type IngredientRepository struct {
-	db *sql.DB
+	db *gorm.DB
 }
 
 func NewIngredientRepository(connString string) IngredientRepository {
-	sqlDb, err := sql.Open("sqlserver", connString)
+	db, err := gorm.Open(sqlserver.Open(connString), &gorm.Config{})
 	if err != nil {
 		log.Fatalf("could not create connection: %s", err)
 	}
 
-	return IngredientRepository{db: sqlDb}
+	return IngredientRepository{db: db}
 }
 
 type Ingredient struct {
-	Id             int
+	IngredientId   uuid.UUID `gorm:"primaryKey"`
 	Name           string
 	Created        time.Time
 	CreatedBy      string
@@ -34,71 +33,20 @@ type Ingredient struct {
 
 func (repo *IngredientRepository) GetAll(ctx context.Context) ([]Ingredient, error) {
 	var ingredients []Ingredient
-
-	query := `SELECT *
-			FROM Mixology.Mixology.Ingredients`
-
-	rows, err := repo.db.QueryContext(ctx, query)
-	if err != nil {
-		return nil, err
-	}
-
-	defer rows.Close()
-	defer repo.db.Close()
-
-	var id int
-	var name, createdBy, lastModifiedBy string
-	var created, lastModified time.Time
-	for rows.Next() {
-		if err := rows.Scan(&id, &name, &created, &createdBy, &lastModified, &lastModifiedBy); err != nil {
-			return nil, err
-		}
-
-		var ingredient = Ingredient{
-			Id:             id,
-			Name:           name,
-			Created:        created,
-			CreatedBy:      createdBy,
-			LastModified:   lastModified,
-			LastModifiedBy: lastModifiedBy,
-		}
-
-		ingredients = append(ingredients, ingredient)
-	}
-
-	err = rows.Err()
-	if err != nil {
-		return nil, err
+	result := repo.db.Find(&ingredients)
+	if result.Error != nil {
+		return nil, result.Error
 	}
 
 	return ingredients, nil
 }
 
 func (repo *IngredientRepository) Create(ctx context.Context, ingredient Ingredient) (Ingredient, error) {
-	query := `INSERT INTO Mixology.Mixology.Ingredients (Name, Created, CreatedBy, LastModified, LastModifiedBy) 
-				OUTPUT inserted.Id
-				VALUES(@name, @created, @createdBy, @lastModified, @lastModifiedBy)`
-
-	defer repo.db.Close()
-
-	var id int
-	rows, err := repo.db.QueryContext(
-		ctx,
-		query,
-		sql.Named("name", ingredient.Name),
-		sql.Named("created", ingredient.Created),
-		sql.Named("createdBy", ingredient.CreatedBy),
-		sql.Named("lastModified", ingredient.LastModified),
-		sql.Named("lastModifiedBy", ingredient.LastModifiedBy),
-	)
-	if err != nil {
-		return Ingredient{}, err
+	ingredient.IngredientId = uuid.New()
+	result := repo.db.Create(&ingredient)
+	if result.Error != nil {
+		return Ingredient{}, result.Error
 	}
-
-	for rows.Next() {
-		err = rows.Scan(&id)
-	}
-	ingredient.Id = id
 
 	return ingredient, nil
 }

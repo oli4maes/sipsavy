@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-func InitServer() {
+func InitServer() error {
 	mux := http.NewServeMux()
 
 	// Ingredient routes
@@ -20,6 +20,8 @@ func InitServer() {
 	log.Print("Listening...")
 	err := http.ListenAndServe(":8080", mux)
 	if err != nil {
-		return
+		return err
 	}
+
+	return nil
 }

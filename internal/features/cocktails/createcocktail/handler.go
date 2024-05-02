@@ -58,7 +58,7 @@ func (h handler) Handle(ctx context.Context, request Request) (Response, error) 
 
 	return Response{
 		Cocktail: cocktailDto{
-			Id:   createdCocktail.Id,
+			Id:   createdCocktail.CocktailId,
 			Name: createdCocktail.Name,
 		},
 	}, nil

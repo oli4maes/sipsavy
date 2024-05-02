@@ -1,6 +1,9 @@
 package createcocktail
 
-import "github.com/go-ozzo/ozzo-validation"
+import (
+	"github.com/go-ozzo/ozzo-validation"
+	"github.com/google/uuid"
+)
 
 type Request struct {
 	Name        string                    `json:"name"`
@@ -8,9 +11,9 @@ type Request struct {
 }
 
 type IngredientWithAmountDto struct {
-	IngredientId int    `json:"ingredient_id"`
-	Amount       int    `json:"amount"`
-	Unit         string `json:"unit"`
+	IngredientId uuid.UUID `json:"ingredient_id"`
+	Amount       int       `json:"amount"`
+	Unit         string    `json:"unit"`
 }
 
 func (r Request) Validate() error {

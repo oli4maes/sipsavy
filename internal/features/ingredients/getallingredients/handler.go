@@ -42,8 +42,8 @@ func (h handler) Handle(ctx context.Context, request Request) (Response, error) 
 
 	for _, i := range ingredients {
 		dto := ingredientDto{
-			Id:   i.Id,
-			Name: i.Name,
+			IngredientId: i.IngredientId,
+			Name:         i.Name,
 		}
 
 		dtos = append(dtos, dto)
