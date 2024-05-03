@@ -42,7 +42,7 @@ func (h handler) Handle(ctx context.Context, request Request) (Response, error) 
 
 	for _, c := range cocktails {
 		dto := cocktailDto{
-			CocktailId: c.CocktailId,
+			CocktailId: c.Id,
 			Name:       c.Name,
 		}
 

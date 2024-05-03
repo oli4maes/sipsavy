@@ -48,7 +48,6 @@ func (h handler) Handle(ctx context.Context, request Request) (Response, error) 
 		CreatedBy:      "test",
 		LastModified:   time.Now(),
 		LastModifiedBy: "test",
-		Ingredients:    ingredients,
 	}
 
 	createdCocktail, err := h.repo.Create(ctx, cocktail)
@@ -58,7 +57,7 @@ func (h handler) Handle(ctx context.Context, request Request) (Response, error) 
 
 	return Response{
 		Cocktail: cocktailDto{
-			Id:   createdCocktail.CocktailId,
+			Id:   createdCocktail.Id,
 			Name: createdCocktail.Name,
 		},
 	}, nil

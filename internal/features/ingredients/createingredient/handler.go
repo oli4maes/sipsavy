@@ -45,7 +45,7 @@ func (h handler) Handle(ctx context.Context, request Request) (Response, error) 
 
 	return Response{
 		Ingredient: ingredientDto{
-			IngredientId: createdIngredient.IngredientId,
+			IngredientId: createdIngredient.Id,
 			Name:         createdIngredient.Name,
 		},
 	}, nil

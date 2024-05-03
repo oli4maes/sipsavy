@@ -23,10 +23,10 @@ func NewIngredientRepository(connString string) IngredientRepository {
 }
 
 type Ingredient struct {
-	IngredientId   uuid.UUID `gorm:"primaryKey"`
-	Name           string
-	Created        time.Time
-	CreatedBy      string
+	Id             uuid.UUID `gorm:"primaryKey"`
+	Name           string    `gorm:"not null"`
+	Created        time.Time `gorm:"not null"`
+	CreatedBy      string    `gorm:"not null"`
 	LastModified   time.Time
 	LastModifiedBy string
 }
@@ -42,7 +42,7 @@ func (repo *IngredientRepository) GetAll(ctx context.Context) ([]Ingredient, err
 }
 
 func (repo *IngredientRepository) Create(ctx context.Context, ingredient Ingredient) (Ingredient, error) {
-	ingredient.IngredientId = uuid.New()
+	ingredient.Id = uuid.New()
 	result := repo.db.Create(&ingredient)
 	if result.Error != nil {
 		return Ingredient{}, result.Error

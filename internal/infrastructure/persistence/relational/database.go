@@ -16,6 +16,10 @@ func MigrateDb() error {
 		return err
 	}
 
+	err = db.SetupJoinTable(&Cocktail{}, "Ingredients", &CocktailIngredient{})
+	if err != nil {
+		return err
+	}
 	err = db.AutoMigrate(&Ingredient{})
 	if err != nil {
 		return err

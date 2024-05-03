@@ -23,20 +23,22 @@ func NewCocktailRepository(connString string) CocktailRepository {
 }
 
 type Cocktail struct {
-	CocktailId     uuid.UUID `gorm:"primaryKey"`
-	Name           string
-	Created        time.Time
-	CreatedBy      string
+	Id             uuid.UUID `gorm:"primaryKey"`
+	Name           string    `gorm:"not null"`
+	Created        time.Time `gorm:"not null"`
+	CreatedBy      string    `gorm:"not null"`
 	LastModified   time.Time
 	LastModifiedBy string
-	Ingredients    []CocktailIngredient
+	Ingredients    []Ingredient `gorm:"many2many:cocktail_ingredients;"`
 }
 
 type CocktailIngredient struct {
 	CocktailId     uuid.UUID `gorm:"primaryKey"`
+	Cocktail       Cocktail
 	IngredientId   uuid.UUID `gorm:"primaryKey"`
-	Amount         int
-	IngredientUnit string
+	Ingredient     Ingredient
+	Amount         int    `gorm:"not null"`
+	IngredientUnit string `gorm:"not null"`
 }
 
 func (repo *CocktailRepository) GetAll(ctx context.Context) ([]Cocktail, error) {
@@ -50,7 +52,7 @@ func (repo *CocktailRepository) GetAll(ctx context.Context) ([]Cocktail, error) 
 }
 
 func (repo *CocktailRepository) Create(ctx context.Context, cocktail Cocktail) (Cocktail, error) {
-	cocktail.CocktailId = uuid.New()
+	cocktail.Id = uuid.New()
 	result := repo.db.Create(cocktail)
 	if result.Error != nil {
 		return Cocktail{}, result.Error
