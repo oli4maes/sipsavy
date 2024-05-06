@@ -24,7 +24,7 @@ func init() {
 	}
 }
 
-// handler is the medaitor handler, all dependencies should be added here
+// handler is the mediator handler, all dependencies should be added here
 type handler struct {
 	repo relational.IngredientRepository
 }
@@ -42,8 +42,8 @@ func (h handler) Handle(ctx context.Context, request Request) (Response, error) 
 
 	for _, i := range ingredients {
 		dto := ingredientDto{
-			Id:   i.Id,
-			Name: i.Name,
+			IngredientId: i.Id,
+			Name:         i.Name,
 		}
 
 		dtos = append(dtos, dto)

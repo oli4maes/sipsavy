@@ -42,8 +42,8 @@ func (h handler) Handle(ctx context.Context, request Request) (Response, error) 
 
 	for _, c := range cocktails {
 		dto := cocktailDto{
-			Id:   c.Id,
-			Name: c.Name,
+			CocktailId: c.Id,
+			Name:       c.Name,
 		}
 
 		dtos = append(dtos, dto)

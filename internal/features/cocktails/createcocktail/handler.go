@@ -48,7 +48,6 @@ func (h handler) Handle(ctx context.Context, request Request) (Response, error) 
 		CreatedBy:      "test",
 		LastModified:   time.Now(),
 		LastModifiedBy: "test",
-		Ingredients:    ingredients,
 	}
 
 	createdCocktail, err := h.repo.Create(ctx, cocktail)
