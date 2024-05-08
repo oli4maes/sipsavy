@@ -1,19 +1,25 @@
 package main
 
 import (
-	"fmt"
-	"github.com/oli4maes/sipsavy/internal/infrastructure/http"
-	"github.com/oli4maes/sipsavy/internal/infrastructure/persistence/relational"
+	"github.com/labstack/echo/v4"
+	"github.com/oli4maes/sipsavy/handler"
 )
 
 func main() {
-	err := relational.MigrateDb()
-	if err != nil {
-		fmt.Println(err)
-	}
+	app := echo.New()
 
-	err = http.InitServer()
-	if err != nil {
-		fmt.Println(err)
-	}
+	userHandler := handler.UserHandler{}
+	app.GET("/user", userHandler.HandleUserShow)
+
+	app.Start(":3000")
+
+	//err := relational.MigrateDb()
+	//if err != nil {
+	//	fmt.Println(err)
+	//}
+	//
+	//err = http.InitServer()
+	//if err != nil {
+	//	fmt.Println(err)
+	//}
 }
