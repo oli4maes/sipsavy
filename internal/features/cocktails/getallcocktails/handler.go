@@ -2,21 +2,16 @@ package getallcocktails
 
 import (
 	"context"
-	"github.com/oli4maes/mediator"
 	"log"
-	"os"
+
+	"github.com/oli4maes/mediator"
 
 	"github.com/oli4maes/sipsavy/internal/infrastructure/persistence/relational"
 )
 
 // Register handler
 func init() {
-	connString, exists := os.LookupEnv("CONNECTION_STRING")
-	if !exists {
-		panic("connection string env variable not set")
-	}
-
-	repo := relational.NewCocktailRepository(connString)
+	repo := relational.NewCocktailRepository()
 
 	err := mediator.Register[Request, Response](handler{repo})
 	if err != nil {

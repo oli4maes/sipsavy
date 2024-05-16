@@ -2,21 +2,16 @@ package createingredient
 
 import (
 	"context"
-	"github.com/oli4maes/mediator"
-	"os"
 	"time"
+
+	"github.com/oli4maes/mediator"
 
 	"github.com/oli4maes/sipsavy/internal/infrastructure/persistence/relational"
 )
 
 // Register handler
 func init() {
-	connString, exists := os.LookupEnv("CONNECTION_STRING")
-	if !exists {
-		panic("connection string env variable not set")
-	}
-
-	repo := relational.NewIngredientRepository(connString)
+	repo := relational.NewIngredientRepository()
 
 	err := mediator.Register[Request, Response](handler{repo: repo})
 	if err != nil {

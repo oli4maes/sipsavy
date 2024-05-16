@@ -2,18 +2,25 @@ package relational
 
 import (
 	"context"
+	"log"
+	"os"
+	"time"
+
 	"github.com/google/uuid"
 	"gorm.io/driver/sqlserver"
 	"gorm.io/gorm"
-	"log"
-	"time"
 )
 
 type CocktailRepository struct {
 	db *gorm.DB
 }
 
-func NewCocktailRepository(connString string) CocktailRepository {
+func NewCocktailRepository() CocktailRepository {
+	connString, exists := os.LookupEnv("CONNECTION_STRING")
+	if !exists {
+		panic("connection string env variable not set")
+	}
+
 	db, err := gorm.Open(sqlserver.Open(connString), &gorm.Config{})
 	if err != nil {
 		log.Fatalf("could not create connection: %s", err)
