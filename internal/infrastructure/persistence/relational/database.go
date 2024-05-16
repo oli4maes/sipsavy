@@ -1,9 +1,10 @@
 package relational
 
 import (
+	"os"
+
 	"gorm.io/driver/sqlserver"
 	"gorm.io/gorm"
-	"os"
 )
 
 func MigrateDb() error {

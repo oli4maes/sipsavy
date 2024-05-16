@@ -2,9 +2,10 @@ package createcocktail
 
 import (
 	"context"
-	"github.com/oli4maes/mediator"
 	"os"
 	"time"
+
+	"github.com/oli4maes/mediator"
 
 	"github.com/oli4maes/sipsavy/internal/infrastructure/persistence/relational"
 )

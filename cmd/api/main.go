@@ -2,7 +2,8 @@ package main
 
 import (
 	"fmt"
-	"github.com/oli4maes/sipsavy/internal/infrastructure/http"
+
+	"github.com/oli4maes/sipsavy/internal/http"
 	"github.com/oli4maes/sipsavy/internal/infrastructure/persistence/relational"
 )
 
