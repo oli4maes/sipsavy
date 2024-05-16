@@ -18,19 +18,15 @@ This is the entry point of the application.
 
 ### internal/features
 
-All mediator handler are defined here.
+The actual features of the application. This contains: http handler, mediator handler, request and response.
 
-### internal/infrastructure/http
+### internal/http
 
-The actual api server and its handlers.
-
-### internal/infrastructure/mediator
-
-The mediator implementation.
+The actual api server.
 
 ### internal/infrastructure/persistence
 
-All repositories.
+Databases & repositories.
 
 # Local development environment
 
