@@ -1,30 +1,23 @@
 package http
 
 import (
-	"log"
-	"net/http"
-
+	"github.com/labstack/echo/v4"
 	"github.com/oli4maes/sipsavy/internal/features/cocktails/createcocktail"
 	"github.com/oli4maes/sipsavy/internal/features/cocktails/getallcocktails"
 	"github.com/oli4maes/sipsavy/internal/features/ingredients/createingredient"
+	"github.com/oli4maes/sipsavy/internal/features/ingredients/getallingredients"
 )
 
-func InitServer() error {
-	mux := http.NewServeMux()
+func InitServer() {
+	e := echo.New()
 
-	// Ingredient routes
-	mux.HandleFunc("GET /api/ingredient", GetAllIngredients)
-	mux.HandleFunc("POST /api/ingredient", createingredient.Handle)
+	// Ingredient endpoints
+	e.GET("/api/ingredient", getallingredients.Handle)
+	e.POST("/api/ingredient", createingredient.Handle)
 
-	// Cocktail routes
-	mux.HandleFunc("GET /api/cocktail", getallcocktails.Handle)
-	mux.HandleFunc("POST /api/cocktail", createcocktail.Handle)
+	// Cocktail endpoints
+	e.GET("/api/cocktail", getallcocktails.Handle)
+	e.POST("/api/cocktail", createcocktail.Handle)
 
-	log.Print("Listening...")
-	err := http.ListenAndServe(":8080", mux)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	e.Logger.Fatal(e.Start(":8080"))
 }

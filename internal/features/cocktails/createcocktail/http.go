@@ -1,37 +1,28 @@
 package createcocktail
 
 import (
-	"encoding/json"
-	"fmt"
+	"context"
 	"net/http"
 
+	"github.com/labstack/echo/v4"
 	"github.com/oli4maes/mediator"
 )
 
-func Handle(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-	var req Request
-	err := json.NewDecoder(r.Body).Decode(&req)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
+func Handle(c echo.Context) error {
+	req := new(Request)
+	if err := c.Bind(req); err != nil {
+		return err
 	}
 
-	err = req.Validate()
+	err := req.Validate()
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		return err
 	}
 
-	res, err := mediator.Send[Request, Response](ctx, req)
+	res, err := mediator.Send[Request, Response](context.Background(), *req)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		_, _ = fmt.Fprintf(w, err.Error())
-		return
+		return err
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	err = json.NewEncoder(w).Encode(res)
-	if err != nil {
-		return
-	}
+	return c.JSON(http.StatusCreated, res)
 }

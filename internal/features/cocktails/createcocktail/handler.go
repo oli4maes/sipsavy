@@ -2,7 +2,6 @@ package createcocktail
 
 import (
 	"context"
-	"os"
 	"time"
 
 	"github.com/oli4maes/mediator"
@@ -12,12 +11,7 @@ import (
 
 // Register createCocktailHandler
 func init() {
-	connString, exists := os.LookupEnv("CONNECTION_STRING")
-	if !exists {
-		panic("connection string env variable not set")
-	}
-
-	repo := relational.NewCocktailRepository(connString)
+	repo := relational.NewCocktailRepository()
 
 	err := mediator.Register[Request, Response](handler{repo: repo})
 	if err != nil {
