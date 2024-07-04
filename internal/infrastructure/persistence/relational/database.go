@@ -25,7 +25,7 @@ func MigrateDb() error {
 	if err != nil {
 		return err
 	}
-	err = db.AutoMigrate(Cocktail{})
+	err = db.AutoMigrate(&Cocktail{})
 	if err != nil {
 		return err
 	}
