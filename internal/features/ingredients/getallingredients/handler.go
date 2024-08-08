@@ -19,7 +19,7 @@ func init() {
 	}
 }
 
-// handler is the medaitor handler, all dependencies should be added here
+// handler is the mediator handler, all dependencies should be added here
 type handler struct {
 	repo relational.IngredientRepository
 }
