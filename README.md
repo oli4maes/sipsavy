@@ -10,6 +10,24 @@ an in-memory message `TRequest` which will be handled by the corresponding handl
 a response `TResponse`. Following this pattern, the only dependencies should lie in the mediator handlers, this
 will ensure that there are no circular dependencies.
 
+## Project structure
+
+### cmd/api
+
+This is the entry point of the application.
+
+### internal/features
+
+The actual features of the application. This contains: http handler, mediator handler, request and response.
+
+### internal/http
+
+The actual api server.
+
+### internal/infrastructure/persistence
+
+Databases & repositories.
+
 # Local development environment
 
 The easiest way to get going with this codebase is to run a docker container for the sql database.
